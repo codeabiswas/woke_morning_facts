@@ -21,4 +21,5 @@ factResponse = requests.get(url = url)
 # Fetch the fact from the JSON object
 fact = factResponse.json()["text"]
 
+# Print out the fact
 print(fact)
