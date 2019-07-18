@@ -1,10 +1,11 @@
 import requests
 from datetime import date
 
-
-todayMonth = date.today().strftime("%m")
+# Fetch today's day and month
 todayDay = date.today().strftime("%d")
+todayMonth = date.today().strftime("%m")
 
+# Format the day and month
 if todayDay[0] == '0':
     todayDay = todayDay[1]
 
@@ -17,6 +18,7 @@ url = "http://numbersapi.com/" + todayMonth + "/" + todayDay + "/date?json"
 # Get the response object
 factResponse = requests.get(url = url)
 
+# Fetch the fact from the JSON object
 fact = factResponse.json()["text"]
 
 print(fact)
