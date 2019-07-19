@@ -8,7 +8,7 @@ import spotipy
 # Email:        petitendian@gmail.com
 
 # Created on:   Tuesday, July 18, 2019
-# Modified on:  Tuesday, July 18, 2019
+# Modified on:  Tuesday, July 19, 2019
 
 """
     Sets the alarm and prints a fun fact when the alarm "rings"
@@ -37,10 +37,13 @@ def setAlarm(alarmTime):
             
             token = "BQDOcXu2_0I1uxggAFviQK9-f5FFiy2qfnkcJdg-OyamaSEeem-sBN2IXxi8nHagelFc50RL5HQMN9G3ZRmiGVccfA9AbkPUocmzdGHV_fybjKrUDExUDshqDTKKsw3oBoV-5Y5C7YoGwQOdmZRnpxWoEo-1j-zWf8zjCG6UEw"
             spotify = spotipy.Spotify(auth=token)
-            results = spotify.search(q='track:' + "Viva La Vida" + 'type:' + "track")
-            print(results)
+            results = spotify.search(q="Coldplay", limit=20)
+            for i, t in enumerate(results['tracks']['items']):
+                print('',str(int(i)+1),t['name'])
+                # Used for the JS module
+                spotify_uri = "spotify:track:"+t['id']
+                print(spotify_uri)
             currTime = time.strftime("%I:%M:%S %p")
-            
 """
     Fetch a fact given the date
 """
@@ -71,7 +74,7 @@ def fetchFact():
 if __name__ == "__main__":
 
     # Set the alarm time
-    alarmTime = "11:55 PM"
+    alarmTime = "12:11 AM"
 
     # Start the alarm
     setAlarm(alarmTime)
