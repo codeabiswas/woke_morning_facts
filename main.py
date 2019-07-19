@@ -2,7 +2,16 @@ import requests
 from datetime import date
 import time
 
+# Author:       Andrei Biswas
+# GitHub:       codeabiswas
+# Email:        petitendian@gmail.com
 
+# Created on:   Tuesday, July 18, 2019
+# Modified on:  Tuesday, July 18, 2019
+
+"""
+    Sets the alarm and prints a fun fact when the alarm "rings"
+"""
 def setAlarm(alarmTime):
 
     # Get AM/PM
@@ -26,7 +35,9 @@ def setAlarm(alarmTime):
             print(fetchFact())
             currTime = time.strftime("%I:%M:%S %p")
             
-
+"""
+    Fetch a fact given the date
+"""
 def fetchFact():
 
     # Fetch today's day and month
@@ -53,6 +64,8 @@ def fetchFact():
 
 if __name__ == "__main__":
 
+    # Set the alarm time
     alarmTime = "08:46 PM"
 
+    # Start the alarm
     setAlarm(alarmTime)
