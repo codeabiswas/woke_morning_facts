@@ -1,6 +1,7 @@
-import requests
 from datetime import date
 import time
+import requests
+import spotipy
 
 # Author:       Andrei Biswas
 # GitHub:       codeabiswas
@@ -33,6 +34,11 @@ def setAlarm(alarmTime):
 
         else:
             print(fetchFact())
+            
+            token = "BQDOcXu2_0I1uxggAFviQK9-f5FFiy2qfnkcJdg-OyamaSEeem-sBN2IXxi8nHagelFc50RL5HQMN9G3ZRmiGVccfA9AbkPUocmzdGHV_fybjKrUDExUDshqDTKKsw3oBoV-5Y5C7YoGwQOdmZRnpxWoEo-1j-zWf8zjCG6UEw"
+            spotify = spotipy.Spotify(auth=token)
+            results = spotify.search(q='track:' + "Viva La Vida" + 'type:' + "track")
+            print(results)
             currTime = time.strftime("%I:%M:%S %p")
             
 """
@@ -65,7 +71,7 @@ def fetchFact():
 if __name__ == "__main__":
 
     # Set the alarm time
-    alarmTime = "08:46 PM"
+    alarmTime = "11:55 PM"
 
     # Start the alarm
     setAlarm(alarmTime)
