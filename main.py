@@ -2,6 +2,7 @@ from datetime import date
 import time
 import requests
 import spotipy
+import random
 
 # Author:       Andrei Biswas
 # GitHub:       codeabiswas
@@ -13,7 +14,7 @@ import spotipy
 """
     Sets the alarm and prints a fun fact when the alarm "rings"
 """
-def setAlarm(alarmTime):
+def setAlarm(alarmTime, artistNames, spotifyToken):
 
     # Get AM/PM
     dayOrNight = alarmTime[6:]
@@ -35,14 +36,23 @@ def setAlarm(alarmTime):
         else:
             print(fetchFact())
             
-            token = "BQDOcXu2_0I1uxggAFviQK9-f5FFiy2qfnkcJdg-OyamaSEeem-sBN2IXxi8nHagelFc50RL5HQMN9G3ZRmiGVccfA9AbkPUocmzdGHV_fybjKrUDExUDshqDTKKsw3oBoV-5Y5C7YoGwQOdmZRnpxWoEo-1j-zWf8zjCG6UEw"
-            spotify = spotipy.Spotify(auth=token)
-            results = spotify.search(q="Coldplay", limit=20)
-            for i, t in enumerate(results['tracks']['items']):
-                print('',str(int(i)+1),t['name'])
+            artistIndex = random.randint(0, len(artistNames)-1)
+                      
+            spotify = spotipy.Spotify(auth=spotifyToken)
+            results = spotify.search(q=artistNames[artistIndex], limit=20)
+
+            trackList = []
+
+            for t in results['tracks']['items']:
+                print(t['name'])
                 # Used for the JS module
-                spotify_uri = "spotify:track:"+t['id']
-                print(spotify_uri)
+                spotifyURI = "spotify:track:"+t['id']
+                trackList.append(spotifyURI)
+
+            trackIndex = random.randint(0, len(artistNames)-1)
+            trackURI = trackList[trackIndex]
+            print(trackURI)
+            
             currTime = time.strftime("%I:%M:%S %p")
 """
     Fetch a fact given the date
@@ -74,7 +84,10 @@ def fetchFact():
 if __name__ == "__main__":
 
     # Set the alarm time
-    alarmTime = "12:11 AM"
+    alarmTime = "04:29 AM"
 
-    # Start the alarm
-    setAlarm(alarmTime)
+    artistNames = ["Coldplay", "Madeon", "Lido", "The 1975"]
+
+    spotifyToken = 'BQA6NgWO9JPDY7xcN3TTmPJ_4rZZH10zv699udJyGFr9J0VCq6K3_SMEhvhWXk_5PUHw5MDnCrHGYZk4jqtMQ0kXOoRe-T45DSmham_Fb_GL8-lWkoWi1FvlYItugSkXz-weNesHk2JhHgaRTBjCDUlwZId_pxyWB3EhKb-oYQ'
+
+    setAlarm(alarmTime, artistNames, spotifyToken)
