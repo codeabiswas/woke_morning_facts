@@ -1,4 +1,6 @@
 from datetime import date
+from flask import Flask
+from multiprocessing import Process, Value
 import time
 import requests
 import spotipy
@@ -9,7 +11,9 @@ import random
 # Email:        petitendian@gmail.com
 
 # Created on:   Tuesday, July 18, 2019
-# Modified on:  Tuesday, July 19, 2019
+# Modified on:  Tuesday, July 20, 2019
+
+app = Flask(__name__)
 
 """
     Sets the alarm and prints a fun fact when the alarm "rings"
@@ -81,13 +85,65 @@ def fetchFact():
 
     return fact
 
+@app.route('/')
+def spotifyPlayerPage():
+    return """
+    <html>
+    <head>
+    <title>Embedded Endian Device Spotify Player</title>
+    </head>
+    <body>
+    <h1>Embedded Endian Device Spotify Player</h1>
+    <h2>Open your console log: <code>View > Developer > JavaScript Console</code></h2>
+
+    <script src="https://sdk.scdn.co/spotify-player.js"></script>
+    <script>
+        window.onSpotifyWebPlaybackSDKReady = () => {
+        const token = 'BQA6NgWO9JPDY7xcN3TTmPJ_4rZZH10zv699udJyGFr9J0VCq6K3_SMEhvhWXk_5PUHw5MDnCrHGYZk4jqtMQ0kXOoRe-T45DSmham_Fb_GL8-lWkoWi1FvlYItugSkXz-weNesHk2JhHgaRTBjCDUlwZId_pxyWB3EhKb-oYQ';
+        const player = new Spotify.Player({
+            name: 'Embedded Endian Device',
+            getOAuthToken: cb => { cb(token); }
+        });
+
+        // Error handling
+        player.addListener('initialization_error', ({ message }) => { console.error(message); });
+        player.addListener('authentication_error', ({ message }) => { console.error(message); });
+        player.addListener('account_error', ({ message }) => { console.error(message); });
+        player.addListener('playback_error', ({ message }) => { console.error(message); });
+
+        // Playback status updates
+        player.addListener('player_state_changed', state => { console.log(state); });
+
+        // Ready
+        player.addListener('ready', ({ device_id }) => {
+            console.log('Ready with Device ID', device_id);
+        });
+
+        // Not Ready
+        player.addListener('not_ready', ({ device_id }) => {
+            console.log('Device ID has gone offline', device_id);
+        });
+
+        // Connect to the player!
+        player.connect();
+        };
+    </script>
+    </body>
+    </html>
+    """
+
 if __name__ == "__main__":
 
     # Set the alarm time
-    alarmTime = "04:29 AM"
+    alarmTime = "05:11 AM"
 
     artistNames = ["Coldplay", "Madeon", "Lido", "The 1975"]
 
     spotifyToken = 'BQA6NgWO9JPDY7xcN3TTmPJ_4rZZH10zv699udJyGFr9J0VCq6K3_SMEhvhWXk_5PUHw5MDnCrHGYZk4jqtMQ0kXOoRe-T45DSmham_Fb_GL8-lWkoWi1FvlYItugSkXz-weNesHk2JhHgaRTBjCDUlwZId_pxyWB3EhKb-oYQ'
 
-    setAlarm(alarmTime, artistNames, spotifyToken)
+    alarmProcess = Process(target=setAlarm, args=(alarmTime, artistNames, spotifyToken))
+    alarmProcess.start()
+    app.run(debug=True, use_reloader=True)
+    print("HIT")
+    alarmProcess.join()
+    # setAlarm(alarmTime, artistNames, spotifyToken)
