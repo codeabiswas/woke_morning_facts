@@ -132,10 +132,13 @@ def spotifyPlayerPage():
     </html>
     """
 
+def spotifyPlayerSettings():
+    app.run(debug=True, use_reloader=False)
+
 if __name__ == "__main__":
 
     # Set the alarm time
-    alarmTime = "05:11 AM"
+    alarmTime = "06:42 AM"
 
     artistNames = ["Coldplay", "Madeon", "Lido", "The 1975"]
 
@@ -143,7 +146,5 @@ if __name__ == "__main__":
 
     alarmProcess = Process(target=setAlarm, args=(alarmTime, artistNames, spotifyToken))
     alarmProcess.start()
-    app.run(debug=True, use_reloader=True)
-    print("HIT")
+    app.run(debug=True, use_reloader=False)
     alarmProcess.join()
-    # setAlarm(alarmTime, artistNames, spotifyToken)
