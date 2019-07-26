@@ -5,6 +5,9 @@ import time
 import requests
 import spotipy
 import random
+from spotipy.oauth2 import SpotifyClientCredentials
+import vlc
+import pafy
 
 # Author:       Andrei Biswas
 # GitHub:       codeabiswas
@@ -18,7 +21,7 @@ app = Flask(__name__)
 """
     Sets the alarm and prints a fun fact when the alarm "rings"
 """
-def setAlarm(alarmTime, artistNames, spotifyToken):
+def setAlarm(alarmTime, youtubeURL):
 
     # Get AM/PM
     dayOrNight = alarmTime[6:]
@@ -39,24 +42,26 @@ def setAlarm(alarmTime, artistNames, spotifyToken):
 
         else:
             print(fetchFact())
+
+            # Get the video object
+            video = pafy.new(youtubeURL)
+            # Get the best audio from the youtube URL
+            best = video.getbestaudio()
             
-            artistIndex = random.randint(0, len(artistNames)-1)
-                      
-            spotify = spotipy.Spotify(auth=spotifyToken)
-            results = spotify.search(q=artistNames[artistIndex], limit=20)
+            # Fetch a VLC Instance
+            instance = vlc.Instance()
+            # Create a new VLC player
+            player = instance.media_player_new()
+            # Get the media object
+            media = instance.media_new(best.url)
+            # Get the media objects MRL
+            media.get_mrl()
+            # Set the player to play the media object
+            player.set_media(media)
+            # Start playing the media
+            player.play()
 
-            trackList = []
-
-            for t in results['tracks']['items']:
-                print(t['name'])
-                # Used for the JS module
-                spotifyURI = "spotify:track:"+t['id']
-                trackList.append(spotifyURI)
-
-            trackIndex = random.randint(0, len(artistNames)-1)
-            trackURI = trackList[trackIndex]
-            print(trackURI)
-            
+            # Update the time            
             currTime = time.strftime("%I:%M:%S %p")
 """
     Fetch a fact given the date
@@ -80,7 +85,7 @@ def fetchFact():
     # Get the response object
     factResponse = requests.get(url = url)
 
-    # Fetch the fact from the JSON object
+    # Fetch the fact from the JSON objectDDidDidDidid
     fact = factResponse.json()["text"]
 
     return fact
@@ -137,14 +142,12 @@ def spotifyPlayerSettings():
 
 if __name__ == "__main__":
 
+    youtubeURL = "https://youtu.be/qQWAicHiVhk"
+
     # Set the alarm time
-    alarmTime = "06:42 AM"
+    alarmTime = "05:25 PM"
 
-    artistNames = ["Coldplay", "Madeon", "Lido", "The 1975"]
-
-    spotifyToken = 'BQA6NgWO9JPDY7xcN3TTmPJ_4rZZH10zv699udJyGFr9J0VCq6K3_SMEhvhWXk_5PUHw5MDnCrHGYZk4jqtMQ0kXOoRe-T45DSmham_Fb_GL8-lWkoWi1FvlYItugSkXz-weNesHk2JhHgaRTBjCDUlwZId_pxyWB3EhKb-oYQ'
-
-    alarmProcess = Process(target=setAlarm, args=(alarmTime, artistNames, spotifyToken))
+    alarmProcess = Process(target=setAlarm, args=(alarmTime, youtubeURL))
     alarmProcess.start()
     app.run(debug=True, use_reloader=False)
     alarmProcess.join()
