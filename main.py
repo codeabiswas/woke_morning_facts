@@ -14,9 +14,7 @@ import pafy
 # Email:        petitendian@gmail.com
 
 # Created on:   Tuesday, July 18, 2019
-# Modified on:  Tuesday, July 20, 2019
-
-app = Flask(__name__)
+# Modified on:  Saturday, July 27, 2019
 
 """
     Sets the alarm and prints a fun fact when the alarm "rings"
@@ -43,26 +41,12 @@ def setAlarm(alarmTime, youtubeURL):
         else:
             print(fetchFact())
 
-            # Get the video object
-            video = pafy.new(youtubeURL)
-            # Get the best audio from the youtube URL
-            best = video.getbestaudio()
-            
-            # Fetch a VLC Instance
-            instance = vlc.Instance()
-            # Create a new VLC player
-            player = instance.media_player_new()
-            # Get the media object
-            media = instance.media_new(best.url)
-            # Get the media objects MRL
-            media.get_mrl()
-            # Set the player to play the media object
-            player.set_media(media)
-            # Start playing the media
-            player.play()
+            ringProcess = Process(target=ringAlarm, args=(youtubeURL,))
+            ringProcess.start()
 
             # Update the time            
             currTime = time.strftime("%I:%M:%S %p")
+
 """
     Fetch a fact given the date
 """
@@ -90,64 +74,36 @@ def fetchFact():
 
     return fact
 
-@app.route('/')
-def spotifyPlayerPage():
-    return """
-    <html>
-    <head>
-    <title>Embedded Endian Device Spotify Player</title>
-    </head>
-    <body>
-    <h1>Embedded Endian Device Spotify Player</h1>
-    <h2>Open your console log: <code>View > Developer > JavaScript Console</code></h2>
 
-    <script src="https://sdk.scdn.co/spotify-player.js"></script>
-    <script>
-        window.onSpotifyWebPlaybackSDKReady = () => {
-        const token = 'BQA6NgWO9JPDY7xcN3TTmPJ_4rZZH10zv699udJyGFr9J0VCq6K3_SMEhvhWXk_5PUHw5MDnCrHGYZk4jqtMQ0kXOoRe-T45DSmham_Fb_GL8-lWkoWi1FvlYItugSkXz-weNesHk2JhHgaRTBjCDUlwZId_pxyWB3EhKb-oYQ';
-        const player = new Spotify.Player({
-            name: 'Embedded Endian Device',
-            getOAuthToken: cb => { cb(token); }
-        });
+"""
+    Play music for the alarm ringtone
+"""
+def ringAlarm(youtubeURL):
+    
+    # Get the video object
+    video = pafy.new(youtubeURL)
+    # Get the best audio from the youtube URL
+    best = video.getbest()
+    
+    # Fetch a VLC Instance
+    instance = vlc.Instance()
+    # Create a new VLC player
+    player = instance.media_player_new()
+    # Get the media object
+    media = instance.media_new(best.url)
+    # Get the media objects MRL
+    media.get_mrl()
+    # Set the player to play the media object
+    player.set_media(media)
 
-        // Error handling
-        player.addListener('initialization_error', ({ message }) => { console.error(message); });
-        player.addListener('authentication_error', ({ message }) => { console.error(message); });
-        player.addListener('account_error', ({ message }) => { console.error(message); });
-        player.addListener('playback_error', ({ message }) => { console.error(message); });
-
-        // Playback status updates
-        player.addListener('player_state_changed', state => { console.log(state); });
-
-        // Ready
-        player.addListener('ready', ({ device_id }) => {
-            console.log('Ready with Device ID', device_id);
-        });
-
-        // Not Ready
-        player.addListener('not_ready', ({ device_id }) => {
-            console.log('Device ID has gone offline', device_id);
-        });
-
-        // Connect to the player!
-        player.connect();
-        };
-    </script>
-    </body>
-    </html>
-    """
-
-def spotifyPlayerSettings():
-    app.run(debug=True, use_reloader=False)
+    # Start playing the media
+    player.play()
 
 if __name__ == "__main__":
 
     youtubeURL = "https://youtu.be/qQWAicHiVhk"
 
     # Set the alarm time
-    alarmTime = "05:25 PM"
+    alarmTime = "06:10 PM"
 
-    alarmProcess = Process(target=setAlarm, args=(alarmTime, youtubeURL))
-    alarmProcess.start()
-    app.run(debug=True, use_reloader=False)
-    alarmProcess.join()
+    setAlarm(alarmTime, youtubeURL)
