@@ -3,9 +3,7 @@ from flask import Flask
 from multiprocessing import Process, Value
 import time
 import requests
-import spotipy
 import random
-from spotipy.oauth2 import SpotifyClientCredentials
 import vlc
 import pafy
 
@@ -40,9 +38,10 @@ def setAlarm(alarmTime, youtubeURL):
 
         else:
             print(fetchFact())
+            ringAlarm(youtubeURL)
 
-            ringProcess = Process(target=ringAlarm, args=(youtubeURL,))
-            ringProcess.start()
+            # ringProcess = Process(target=ringAlarm, args=(youtubeURL,))
+            # ringProcess.start()
 
             # Update the time            
             currTime = time.strftime("%I:%M:%S %p")
@@ -79,11 +78,16 @@ def fetchFact():
     Play music for the alarm ringtone
 """
 def ringAlarm(youtubeURL):
-    
-    # Get the video object
-    video = pafy.new(youtubeURL)
-    # Get the best audio from the youtube URL
-    best = video.getbest()
+
+    try:
+        playlist = pafy.get_playlist(youtubeURL)
+        randomIndex = random.randint(0, len(playlist['items']))
+        best = playlist['items'][randomIndex]['pafy'].getbestaudio()
+    except:
+        # Get the video object
+        video = pafy.new(youtubeURL)
+        # Get the best audio from the youtube URL
+        best = video.getbestaudio()
     
     # Fetch a VLC Instance
     instance = vlc.Instance()
@@ -101,9 +105,10 @@ def ringAlarm(youtubeURL):
 
 if __name__ == "__main__":
 
-    youtubeURL = "https://youtu.be/qQWAicHiVhk"
+    # youtubeURL = "https://youtu.be/qQWAicHiVhk"
+    youtubeURL = "https://www.youtube.com/watch?v=qQWAicHiVhk&list=PL7mFHfw12HbzdQ34sS_S2vdZe6vIbwubX"
 
     # Set the alarm time
-    alarmTime = "06:10 PM"
+    alarmTime = "08:57 PM"
 
     setAlarm(alarmTime, youtubeURL)
