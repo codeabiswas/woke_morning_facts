@@ -1,0 +1,15 @@
+# Author:       Andrei Biswas
+# GitHub:       codeabiswas
+# Email:        petitendian@gmail.com
+
+# Created on:   Tuesday, August 6, 2019
+# Modified on:  Wednesday, August 7, 2019
+
+# The YouTube URL (Playlist or video)
+youtube_url: 'your-youtube-url-here'
+
+# The snooze time (in minutes)
+snooze_time: 15
+
+# The alarm time (In HH:MM 24-hour format)
+alarm_time: 'your-alarm-time-here'
